@@ -8,7 +8,6 @@ from webargs.flaskparser import use_kwargs
 from functionalities.employees import Employee
 from utilities.validations import handle_exceptions
 
-
 ma = Marshmallow()
 
 

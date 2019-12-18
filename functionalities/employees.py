@@ -1,8 +1,8 @@
-from sqlalchemy import distinct, func, text, not_
+from sqlalchemy import distinct
 
 from functionalities.employee_gifts import EmployeeGift
 from functionalities.gift_categories import GiftCategory
-from models import db, Gift, EmployeeGift as EmployeeGiftModel, Employee as EmployeeModel, EmployeeInterest, \
+from models import db, Gift, Employee as EmployeeModel, EmployeeInterest, \
     GiftCategory as GiftCategoryModel
 from utilities.exceptions import ResourceDoesNotExist
 

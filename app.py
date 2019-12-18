@@ -1,5 +1,6 @@
 from flask import Blueprint
 from flask_restful import Api
+
 from resources import gift_assignment
 
 api_bp = Blueprint('api', __name__)

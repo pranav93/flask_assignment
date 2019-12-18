@@ -1,5 +1,5 @@
-from run import create_app
 from models import db, Employee, Category, EmployeeInterest
+from run import create_app
 from scripts import employees
 
 if __name__ == '__main__':
