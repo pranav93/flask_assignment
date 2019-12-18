@@ -1,6 +1,12 @@
 # How To Install?
 
-Create a .env file with contents
+First of all clone the repo with command,
+
+```bash
+git clone git@github.com:pranav93/flask_assignment.git
+```
+
+Now, create a .env file with contents
 ```env
 FLASK_APP=run
 FLASK_ENV=development

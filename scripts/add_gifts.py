@@ -1,5 +1,5 @@
-from run import create_app
 from models import db, Gift, Category, GiftCategory
+from run import create_app
 from scripts import gifts
 
 if __name__ == '__main__':
