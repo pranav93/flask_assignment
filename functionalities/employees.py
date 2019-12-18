@@ -67,7 +67,7 @@ class Employee(object):
                 if unmatched_gift_ids:
                     assigned_gift_id = next(iter(unmatched_gift_ids))
                 else:
-                    # todo: find the gift that has many categories
+                    # todo: find the gift that has less categories
                     # todo: find optimum_gift_id
                     available_gift_ids = all_gift_ids - already_assigned_gift_ids
 
@@ -78,7 +78,7 @@ class Employee(object):
                         GiftCategory.gift_id, func.count(GiftCategory.gift_id).label('category_count')
                     ).filter(
                         GiftCategory.gift_id.in_(list(available_gift_ids))
-                    ).group_by(GiftCategory.gift_id).order_by(text('category_count desc')) \
+                    ).group_by(GiftCategory.gift_id).order_by(text('category_count asc')) \
                         .first()
                     assigned_gift_id = result[0]
 
