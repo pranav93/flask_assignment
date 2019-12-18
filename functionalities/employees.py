@@ -1,8 +1,9 @@
 from sqlalchemy import distinct, func, text, not_
 
 from functionalities.employee_gifts import EmployeeGift
+from functionalities.gift_categories import GiftCategory
 from models import db, Gift, EmployeeGift as EmployeeGiftModel, Employee as EmployeeModel, EmployeeInterest, \
-    GiftCategory
+    GiftCategory as GiftCategoryModel
 from utilities.exceptions import ResourceDoesNotExist
 
 
@@ -13,32 +14,32 @@ class Employee(object):
 
     def get_suitable_gift_ids(self):
         result = db.session.query(
-            EmployeeModel, EmployeeInterest, GiftCategory, Gift
+            EmployeeModel, EmployeeInterest, GiftCategoryModel, Gift
         ).join(
             EmployeeModel, EmployeeModel.id == EmployeeInterest.employee_id
         ).join(
-            GiftCategory, GiftCategory.category_id == EmployeeInterest.interest_id
+            GiftCategoryModel, GiftCategoryModel.category_id == EmployeeInterest.interest_id
         ).join(
-            Gift, GiftCategory.gift_id == Gift.id
+            Gift, GiftCategoryModel.gift_id == Gift.id
         ).filter(EmployeeModel.id == self.id).all()
 
         suitable_gift_ids = {item[3].id for item in result}
         return suitable_gift_ids
 
     def get_all_matching_gift_ids(self):
-        result = db.session.query(EmployeeModel, EmployeeInterest, GiftCategory, Gift).join(
+        result = db.session.query(EmployeeModel, EmployeeInterest, GiftCategoryModel, Gift).join(
             EmployeeModel, EmployeeModel.id == EmployeeInterest.employee_id).join(
-            GiftCategory, GiftCategory.category_id == EmployeeInterest.interest_id).join(
-            Gift, GiftCategory.gift_id == Gift.id).all()
+            GiftCategoryModel, GiftCategoryModel.category_id == EmployeeInterest.interest_id).join(
+            Gift, GiftCategoryModel.gift_id == Gift.id).all()
 
         return set([item[3].id for item in result])
 
     def assign_gift(self):
         employee_gift = EmployeeGift()
+        gift_category = GiftCategory()
         assigned_gift = employee_gift.get_employee_gift(self.id)
         if not assigned_gift:
             print('assigning gift')
-
             suitable_gift_ids = self.get_suitable_gift_ids()
 
             # find unassigned suitable gifts
@@ -68,14 +69,7 @@ class Employee(object):
 
                     if not available_gift_ids:
                         raise ResourceDoesNotExist('no gifts are available')
-
-                    result = db.session.query(
-                        GiftCategory.gift_id, func.count(GiftCategory.gift_id).label('category_count')
-                    ).filter(
-                        GiftCategory.gift_id.in_(list(available_gift_ids))
-                    ).group_by(GiftCategory.gift_id).order_by(text('category_count asc')) \
-                        .first()
-                    assigned_gift_id = result[0]
+                    assigned_gift_id = gift_category.get_optimum_gift_id(list(available_gift_ids))
 
             assigned_gift = employee_gift.create_employee_gift_record(self.id, assigned_gift_id,
                                                                       'gift assignment succeeded')
