@@ -6,8 +6,6 @@ from marshmallow import fields
 from webargs.flaskparser import use_kwargs
 
 from functionalities.employees import Employee
-from models import db, Category
-from utilities.exceptions import ResourceExists, ResourceDoesNotExist
 from utilities.validations import handle_exceptions
 
 

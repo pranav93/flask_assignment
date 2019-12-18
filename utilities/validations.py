@@ -15,12 +15,12 @@ def handle_exceptions():
                 result = func(*args, **kwargs)
                 return result
             except ResourceExists as re:
-                abort(http.HTTPStatus.BAD_REQUEST, message=re.message)
+                abort(http.HTTPStatus.BAD_REQUEST, message=re.message, status='error')
             except ResourceDoesNotExist as re:
-                abort(http.HTTPStatus.NOT_FOUND, message=re.message)
+                abort(http.HTTPStatus.NOT_FOUND, message=re.message, status='error')
             except IntegrityError as ie:
-                abort(http.HTTPStatus.BAD_REQUEST, message=repr(ie))
+                abort(http.HTTPStatus.BAD_REQUEST, message=repr(ie), status='error')
             except Exception as e:
-                abort(http.HTTPStatus.INTERNAL_SERVER_ERROR, message=repr(e))
+                abort(http.HTTPStatus.INTERNAL_SERVER_ERROR, message=repr(e), status='error')
         return wrapper
     return wrapped
