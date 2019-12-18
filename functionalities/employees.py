@@ -1,20 +1,15 @@
 from sqlalchemy import distinct, func, text, not_
 
+from functionalities.employee_gifts import EmployeeGift
 from models import db, Gift, EmployeeGift as EmployeeGiftModel, Employee as EmployeeModel, EmployeeInterest, \
     GiftCategory
 from utilities.exceptions import ResourceDoesNotExist
 
 
 class Employee(object):
-    def __init__(self, employee_id):
+    def __init__(self, employee_id, *args, **kwargs):
         self.id = employee_id
-
-    def get_gift(self):
-        gift = None
-        employee_gift = EmployeeGiftModel.query.filter_by(employee_id=self.id).first()
-        if employee_gift and employee_gift.status == 'gift assignment succeeded':
-            gift = Gift.query.filter_by(id=employee_gift.gift_id).first()
-        return gift
+        super(Employee, self).__init__(*args, **kwargs)
 
     def get_suitable_gift_ids(self):
         result = db.session.query(
@@ -39,15 +34,15 @@ class Employee(object):
         return set([item[3].id for item in result])
 
     def assign_gift(self):
-        assigned_gift = self.get_gift()
+        employee_gift = EmployeeGift()
+        assigned_gift = employee_gift.get_employee_gift(self.id)
         if not assigned_gift:
             print('assigning gift')
 
             suitable_gift_ids = self.get_suitable_gift_ids()
 
             # find unassigned suitable gifts
-            already_assigned_gift_ids = set([item[0] for item in db.session.query(distinct(EmployeeGiftModel.gift_id)).all()])
-
+            already_assigned_gift_ids = employee_gift.get_all_assigned_gift_ids()
             unassigned_suitable_gift_ids = suitable_gift_ids - already_assigned_gift_ids
 
             if unassigned_suitable_gift_ids:
@@ -82,12 +77,7 @@ class Employee(object):
                         .first()
                     assigned_gift_id = result[0]
 
-            employee_gift_record = EmployeeGiftModel()
-            employee_gift_record.employee_id = self.id
-            employee_gift_record.gift_id = assigned_gift_id
-            employee_gift_record.status = 'gift assignment succeeded'
-            db.session.add(employee_gift_record)
-            db.session.commit()
-            assigned_gift = Gift.query.filter_by(id=assigned_gift_id).first()
+            assigned_gift = employee_gift.create_employee_gift_record(self.id, assigned_gift_id,
+                                                                      'gift assignment succeeded')
 
         return assigned_gift
