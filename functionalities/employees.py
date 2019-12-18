@@ -19,9 +19,6 @@ class Employee(object):
         assigned_gift = self.get_gift()
         if not assigned_gift:
             print('assigning gift')
-            # employee_gift_record = EmployeeGift(employee_id=self.id, status='gift assignment pending')
-            # db.session.add(employee_gift_record)
-            # db.session.commit()
 
             result = db.session.query(
                 EmployeeModel, EmployeeInterest, GiftCategory, Gift
@@ -42,14 +39,6 @@ class Employee(object):
 
             if unassigned_gift_ids:
                 assigned_gift_id = next(iter(unassigned_gift_ids))
-                employee_gift_record = EmployeeGift()
-                employee_gift_record.employee_id = self.id
-                employee_gift_record.gift_id = assigned_gift_id
-                employee_gift_record.status = 'gift assignment succeeded'
-                db.session.add(employee_gift_record)
-                db.session.commit()
-
-                assigned_gift = Gift.query.filter_by(id=assigned_gift_id).first()
             else:
                 print('no suitable gift found')
                 # todo: find the gift that cannot be given to others
@@ -82,12 +71,12 @@ class Employee(object):
                         .first()
                     assigned_gift_id = result[0]
 
-                employee_gift_record = EmployeeGift()
-                employee_gift_record.employee_id = self.id
-                employee_gift_record.gift_id = assigned_gift_id
-                employee_gift_record.status = 'gift assignment succeeded'
-                db.session.add(employee_gift_record)
-                db.session.commit()
-                assigned_gift = Gift.query.filter_by(id=assigned_gift_id).first()
+            employee_gift_record = EmployeeGift()
+            employee_gift_record.employee_id = self.id
+            employee_gift_record.gift_id = assigned_gift_id
+            employee_gift_record.status = 'gift assignment succeeded'
+            db.session.add(employee_gift_record)
+            db.session.commit()
+            assigned_gift = Gift.query.filter_by(id=assigned_gift_id).first()
 
         return assigned_gift
