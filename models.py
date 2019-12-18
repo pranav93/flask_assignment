@@ -44,3 +44,11 @@ class GiftCategory(db.Model):
     category_id = db.Column(db.Integer, ForeignKey('categories.id'), nullable=False)
     __table_args__ = (UniqueConstraint('gift_id', 'category_id', name='_gift_category_uc'),
                       )
+
+
+class EmployeeGift(db.Model):
+    __tablename__ = 'employee_gifts'
+    id = db.Column(db.Integer, primary_key=True)
+    employee_id = db.Column(db.Integer, ForeignKey('employees.id'), nullable=False)
+    gift_id = db.Column(db.Integer, ForeignKey('gifts.id'), nullable=True)
+    status = db.Column(db.String(64), nullable=False)
