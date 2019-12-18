@@ -27,5 +27,31 @@ python migrate.py db upgrade
 Run the app using,
 
 ```bash
-flask run
+python run.py
 ```
+
+Now, we can add employee and gift data to the postgresql database, using scripts.
+* To add employees, run the following command in project root directory.
+
+```bash
+export PYTHONPATH=.
+python scripts/add_employees.py
+```
+* And to add gifts, run
+```bash
+export PYTHONPATH=.
+python scripts/add_gifts.py
+```
+
+Once we have the data in database, we can start assigning the gifts to employees
+* Method: POST
+* API endpoint : http://127.0.0.1:5000/api/employee/47/assign_gift
+* Body: N/A
+* Response : `{
+    "status": "success",
+    "data": {
+        "gift": "spotify voucher"
+    }
+}`
+
+![Alt text](screenshots/assign_gift.png?raw=true "Assign Gift")
