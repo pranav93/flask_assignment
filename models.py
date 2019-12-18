@@ -24,6 +24,8 @@ class Gift(db.Model):
     __tablename__ = 'gifts'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), nullable=False)
+    __table_args__ = (UniqueConstraint('name', name='_gift_name_uc'),
+                      )
 
 
 class EmployeeInterest(db.Model):
