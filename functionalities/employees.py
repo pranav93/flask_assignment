@@ -45,18 +45,20 @@ class Employee(object):
 
             suitable_gift_ids = self.get_suitable_gift_ids()
 
-            # todo: unassigned gifts
+            # find unassigned suitable gifts
             already_assigned_gift_ids = set([item[0] for item in db.session.query(distinct(EmployeeGiftModel.gift_id)).all()])
 
-            unassigned_gift_ids = suitable_gift_ids - already_assigned_gift_ids
+            unassigned_suitable_gift_ids = suitable_gift_ids - already_assigned_gift_ids
 
-            if unassigned_gift_ids:
-                assigned_gift_id = next(iter(unassigned_gift_ids))
+            if unassigned_suitable_gift_ids:
+                assigned_gift_id = next(iter(unassigned_suitable_gift_ids))
             else:
                 print('no suitable gift found')
-                # todo: find the gift that cannot be given to others
+                # find the gift that cannot be given to others
 
-                matched_gift_ids = self.get_all_matching_gift_ids()
+                matched_gift_ids = self.get_all_matching_gift_ids()  # here we get the list of gifts that are
+                # matching the user interests
+
                 all_gift_ids = set(
                     [item[0] for item in db.session.query(distinct(Gift.id)).all()])
                 unmatched_gift_ids = all_gift_ids - matched_gift_ids
@@ -66,7 +68,7 @@ class Employee(object):
                 if unmatched_gift_ids:
                     assigned_gift_id = next(iter(unmatched_gift_ids))
                 else:
-                    # find the gift that has less categories
+                    # find the gift that has less categories, as even the gifts that no one wants are not available
                     available_gift_ids = all_gift_ids - already_assigned_gift_ids
 
                     if not available_gift_ids:
