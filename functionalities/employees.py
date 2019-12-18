@@ -72,7 +72,7 @@ class Employee(object):
                     available_gift_ids = all_gift_ids - already_assigned_gift_ids
 
                     if not available_gift_ids:
-                        raise ResourceDoesNotExist('no suitable gift found')
+                        raise ResourceDoesNotExist('no gifts are available')
 
                     result = db.session.query(
                         GiftCategory.gift_id, func.count(GiftCategory.gift_id).label('category_count')
